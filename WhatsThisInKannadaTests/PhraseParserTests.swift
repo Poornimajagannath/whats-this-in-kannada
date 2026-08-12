@@ -17,4 +17,15 @@ final class PhraseParserTests: XCTestCase {
     func testFallsBackToMeaningfulToken() {
         XCTAssertEqual(PhraseParser.extractKeyword(from: "this is a rainbow", catalog: catalog), "rainbow")
     }
+
+    func testKeepsKannadaScript() {
+        XCTAssertEqual(PhraseParser.normalize("ಅಮ್ಮ"), "ಅಮ್ಮ")
+        XCTAssertEqual(PhraseParser.extractKeyword(from: "ಆನೆ", catalog: catalog), "elephant")
+        XCTAssertEqual(PhraseParser.extractKeyword(from: "this is ಅಪ್ಪ", catalog: catalog), "ಅಪ್ಪ")
+    }
+
+    func testEmptyAndPunctuation() {
+        XCTAssertNil(PhraseParser.extractKeyword(from: "   ", catalog: catalog))
+        XCTAssertEqual(PhraseParser.extractKeyword(from: "elephant!!!", catalog: catalog), "elephant")
+    }
 }

@@ -13,9 +13,8 @@ enum TranslationServiceError: LocalizedError {
 
 struct TranslationService {
     func translateEnglishToKannada(_ text: String) async throws -> LookupResult {
-        // The curated toddler catalog is the MVP path. Apple Translation can be
-        // wired here once the app's deployment target and translation session
-        // UX are finalized in Xcode.
+        // V1 stays curated-only so unknown words never invent toddler-unsafe
+        // translations. Home shows nearby catalog suggestions instead.
         throw TranslationServiceError.unavailable
     }
 }

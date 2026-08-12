@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		010000000000000000000001 /* WhatsThisInKannadaApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000001 /* WhatsThisInKannadaApp.swift */; };
 		010000000000000000000002 /* AppTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000002 /* AppTabView.swift */; };
+		010000000000000000000021 /* AppSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000021 /* AppSession.swift */; };
+		010000000000000000000022 /* PracticeEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000022 /* PracticeEngine.swift */; };
 		010000000000000000000003 /* WordCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000003 /* WordCategory.swift */; };
 		010000000000000000000004 /* KannadaWord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000004 /* KannadaWord.swift */; };
 		010000000000000000000005 /* SavedWord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000005 /* SavedWord.swift */; };
@@ -35,6 +37,9 @@
 		01000000000000000000001C /* mascots in Resources */ = {isa = PBXBuildFile; fileRef = 02000000000000000000001E /* mascots */; };
 		010000000000000000000018 /* PhraseParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000018 /* PhraseParserTests.swift */; };
 		010000000000000000000019 /* WordCatalogTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000019 /* WordCatalogTests.swift */; };
+		010000000000000000000023 /* FavoritesStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000023 /* FavoritesStoreTests.swift */; };
+		010000000000000000000024 /* LookupFlowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000024 /* LookupFlowTests.swift */; };
+		010000000000000000000025 /* PracticeEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020000000000000000000025 /* PracticeEngineTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -50,6 +55,8 @@
 /* Begin PBXFileReference section */
 		020000000000000000000001 /* WhatsThisInKannadaApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatsThisInKannadaApp.swift; sourceTree = "<group>"; };
 		020000000000000000000002 /* AppTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTabView.swift; sourceTree = "<group>"; };
+		020000000000000000000021 /* AppSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSession.swift; sourceTree = "<group>"; };
+		020000000000000000000022 /* PracticeEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeEngine.swift; sourceTree = "<group>"; };
 		020000000000000000000003 /* WordCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordCategory.swift; sourceTree = "<group>"; };
 		020000000000000000000004 /* KannadaWord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KannadaWord.swift; sourceTree = "<group>"; };
 		020000000000000000000005 /* SavedWord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedWord.swift; sourceTree = "<group>"; };
@@ -76,6 +83,9 @@
 		02000000000000000000001E /* mascots */ = {isa = PBXFileReference; lastKnownFileType = folder; path = mascots; sourceTree = "<group>"; };
 		020000000000000000000018 /* PhraseParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhraseParserTests.swift; sourceTree = "<group>"; };
 		020000000000000000000019 /* WordCatalogTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordCatalogTests.swift; sourceTree = "<group>"; };
+		020000000000000000000023 /* FavoritesStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesStoreTests.swift; sourceTree = "<group>"; };
+		020000000000000000000024 /* LookupFlowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LookupFlowTests.swift; sourceTree = "<group>"; };
+		020000000000000000000025 /* PracticeEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeEngineTests.swift; sourceTree = "<group>"; };
 		02000000000000000000001A /* WhatsThisInKannada.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WhatsThisInKannada.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		02000000000000000000001B /* WhatsThisInKannadaTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WhatsThisInKannadaTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -135,6 +145,7 @@
 			children = (
 				020000000000000000000001 /* WhatsThisInKannadaApp.swift */,
 				020000000000000000000002 /* AppTabView.swift */,
+				020000000000000000000021 /* AppSession.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -159,6 +170,7 @@
 				02000000000000000000000A /* SpeechOutputService.swift */,
 				02000000000000000000000B /* SpeechService.swift */,
 				02000000000000000000001C /* FavoritesStore.swift */,
+				020000000000000000000022 /* PracticeEngine.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -225,6 +237,9 @@
 			children = (
 				020000000000000000000018 /* PhraseParserTests.swift */,
 				020000000000000000000019 /* WordCatalogTests.swift */,
+				020000000000000000000023 /* FavoritesStoreTests.swift */,
+				020000000000000000000024 /* LookupFlowTests.swift */,
+				020000000000000000000025 /* PracticeEngineTests.swift */,
 			);
 			path = WhatsThisInKannadaTests;
 			sourceTree = "<group>";
@@ -341,6 +356,7 @@
 			files = (
 				010000000000000000000001 /* WhatsThisInKannadaApp.swift in Sources */,
 				010000000000000000000002 /* AppTabView.swift in Sources */,
+				010000000000000000000021 /* AppSession.swift in Sources */,
 				010000000000000000000003 /* WordCategory.swift in Sources */,
 				010000000000000000000004 /* KannadaWord.swift in Sources */,
 				010000000000000000000005 /* SavedWord.swift in Sources */,
@@ -351,6 +367,7 @@
 				01000000000000000000000A /* SpeechOutputService.swift in Sources */,
 				01000000000000000000000B /* SpeechService.swift in Sources */,
 				01000000000000000000001A /* FavoritesStore.swift in Sources */,
+				010000000000000000000022 /* PracticeEngine.swift in Sources */,
 				01000000000000000000000C /* EmptyStateView.swift in Sources */,
 				01000000000000000000001B /* ViewModifiers.swift in Sources */,
 				01000000000000000000000D /* WordIllustrationView.swift in Sources */,
@@ -371,6 +388,9 @@
 			files = (
 				010000000000000000000018 /* PhraseParserTests.swift in Sources */,
 				010000000000000000000019 /* WordCatalogTests.swift in Sources */,
+				010000000000000000000023 /* FavoritesStoreTests.swift in Sources */,
+				010000000000000000000024 /* LookupFlowTests.swift in Sources */,
+				010000000000000000000025 /* PracticeEngineTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -13,11 +13,16 @@ struct PracticeView: View {
 
     @EnvironmentObject private var favoritesStore: FavoritesStore
     @State private var mode: Mode = .flashcards
+    @State private var completedIDs: Set<String> = []
 
     private var practiceWords: [KannadaWord] {
         let favoriteIDs = Set(favoritesStore.savedWords.map(\.wordID))
         let favorites = catalog.words.filter { favoriteIDs.contains($0.id) }
         return favorites.isEmpty ? Array(catalog.words.prefix(18)) : favorites
+    }
+
+    private var progress: Double {
+        PracticeEngine.progress(completed: completedIDs.count, total: practiceWords.count)
     }
 
     var body: some View {
@@ -42,11 +47,11 @@ struct PracticeView: View {
                 } else {
                     switch mode {
                     case .flashcards:
-                        FlashcardPracticeView(words: practiceWords)
+                        FlashcardPracticeView(words: practiceWords, completedIDs: $completedIDs)
                     case .quiz:
-                        QuizPracticeView(words: practiceWords)
+                        QuizPracticeView(words: practiceWords, completedIDs: $completedIDs)
                     case .walk:
-                        ObjectWalkPracticeView(words: practiceWords)
+                        ObjectWalkPracticeView(words: practiceWords, completedIDs: $completedIDs)
                     }
                 }
             }
@@ -54,6 +59,9 @@ struct PracticeView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .background(StorybookPaperBackground())
             .navigationTitle("Play")
+            .onChange(of: mode) { _, _ in
+                completedIDs = []
+            }
         }
     }
 
@@ -61,22 +69,21 @@ struct PracticeView: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("ಆಟ · Picture Match")
+                    Text(headerTitle)
                         .font(.title2.weight(.black))
-                    Text("Hear it, find it, say it back")
+                    Text(headerSubtitle)
                         .font(.callout.weight(.semibold))
                         .opacity(0.78)
                 }
 
                 Spacer()
 
-                HStack(spacing: 3) {
-                    ForEach(0..<3) { _ in
-                        Image(systemName: "star.fill")
-                            .font(.caption.weight(.black))
-                            .foregroundStyle(KannadaTheme.marigold)
-                    }
-                }
+                Text("\(completedIDs.count)/\(max(practiceWords.count, 1))")
+                    .font(.headline.weight(.black))
+                    .padding(.horizontal, 12)
+                    .frame(height: 36)
+                    .background(.white.opacity(0.16), in: Capsule())
+                    .accessibilityLabel("\(completedIDs.count) of \(practiceWords.count) words practiced")
             }
 
             GeometryReader { proxy in
@@ -84,27 +91,51 @@ struct PracticeView: View {
                     Capsule().fill(.white.opacity(0.18))
                     Capsule()
                         .fill(KannadaTheme.marigold)
-                        .frame(width: proxy.size.width * 0.42)
+                        .frame(width: proxy.size.width * progress)
                 }
             }
             .frame(height: 6)
+            .accessibilityLabel("Practice progress")
         }
         .foregroundStyle(.white)
         .padding(18)
         .background(KannadaTheme.parentBlue, in: RoundedRectangle(cornerRadius: 26, style: .continuous))
         .padding(.horizontal, 16)
     }
+
+    private var headerTitle: String {
+        switch mode {
+        case .flashcards:
+            "ಆಟ · Flashcards"
+        case .quiz:
+            "ಆಟ · Quiz"
+        case .walk:
+            "ಆಟ · Object walk"
+        }
+    }
+
+    private var headerSubtitle: String {
+        switch mode {
+        case .flashcards:
+            "See the picture, then reveal Kannada"
+        case .quiz:
+            "Look at the picture, tap the Kannada word"
+        case .walk:
+            "Find it, hear it, say it, match it"
+        }
+    }
 }
 
 private struct FlashcardPracticeView: View {
     let words: [KannadaWord]
+    @Binding var completedIDs: Set<String>
 
     @EnvironmentObject private var speechOutput: SpeechOutputService
     @State private var index = 0
     @State private var showingAnswer = false
 
     private var word: KannadaWord {
-        words[index % words.count]
+        words[PracticeEngine.flashcardIndex(current: index, count: words.count, delta: 0)]
     }
 
     var body: some View {
@@ -128,11 +159,26 @@ private struct FlashcardPracticeView: View {
             .frame(maxWidth: .infinity, minHeight: 360)
             .kannadaCard(cornerRadius: 28)
             .padding(.horizontal, 16)
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel(showingAnswer ? "\(word.displayEnglish), \(word.kannada), \(word.transliteration)" : word.displayEnglish)
 
             HStack(spacing: 12) {
                 Button {
+                    move(-1)
+                } label: {
+                    Image(systemName: "arrow.left")
+                        .font(.title3.weight(.bold))
+                        .foregroundStyle(KannadaTheme.ink)
+                        .frame(width: 58, height: 56)
+                        .background(KannadaTheme.border.opacity(0.80), in: Circle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Previous card")
+
+                Button {
                     showingAnswer.toggle()
                     if showingAnswer {
+                        completedIDs.insert(word.id)
                         speechOutput.speak(word.kannada, wordID: word.id)
                     }
                 } label: {
@@ -145,8 +191,7 @@ private struct FlashcardPracticeView: View {
                 .buttonStyle(.plain)
 
                 Button {
-                    index = (index + 1) % words.count
-                    showingAnswer = false
+                    move(1)
                 } label: {
                     Image(systemName: "arrow.right")
                         .font(.title3.weight(.bold))
@@ -159,11 +204,21 @@ private struct FlashcardPracticeView: View {
             }
             .padding(.horizontal, 16)
         }
+        .onChange(of: words.map(\.id).joined(separator: "|")) { _, _ in
+            index = 0
+            showingAnswer = false
+        }
+    }
+
+    private func move(_ delta: Int) {
+        index = PracticeEngine.flashcardIndex(current: index, count: words.count, delta: delta)
+        showingAnswer = false
     }
 }
 
 private struct QuizPracticeView: View {
     let words: [KannadaWord]
+    @Binding var completedIDs: Set<String>
 
     @EnvironmentObject private var speechOutput: SpeechOutputService
     @State private var prompt: KannadaWord?
@@ -181,33 +236,33 @@ private struct QuizPracticeView: View {
                     WordIllustrationView(imageName: prompt.imageName, category: prompt.category, size: 156)
 
                     VStack(spacing: 4) {
-                        Text("\(prompt.kannada) ಯಾವುದು?")
+                        Text("ಯಾವುದು?")
                             .font(.system(.largeTitle, design: .rounded, weight: .black))
                             .foregroundStyle(KannadaTheme.ink)
-                            .multilineTextAlignment(.center)
-                            .minimumScaleFactor(0.66)
 
-                        Text("Which one is the \(prompt.displayEnglish.lowercased())?")
+                        Text("Which Kannada word matches this picture?")
                             .font(.callout.weight(.semibold))
                             .foregroundStyle(KannadaTheme.ink.opacity(0.54))
+                            .multilineTextAlignment(.center)
                     }
                 }
                 .padding(20)
                 .frame(maxWidth: .infinity)
                 .kannadaCard(cornerRadius: 26)
                 .padding(.horizontal, 16)
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel("Quiz picture for a \(prompt.category.displayName) word")
 
                 VStack(spacing: 10) {
                     ForEach(choices) { choice in
                         Button {
                             selectedID = choice.id
-                            if choice.id == prompt.id {
+                            if PracticeEngine.isCorrect(choiceID: choice.id, promptID: prompt.id) {
+                                completedIDs.insert(prompt.id)
                                 speechOutput.speak(choice.kannada, wordID: choice.id)
                             }
                         } label: {
                             HStack {
-                                WordIllustrationView(imageName: choice.imageName, category: choice.category, size: 54)
-
                                 Text(choice.kannada)
                                     .font(.title2.weight(.black))
                                     .foregroundStyle(KannadaTheme.ink)
@@ -218,11 +273,17 @@ private struct QuizPracticeView: View {
                                     .font(.callout.weight(.semibold))
                                     .foregroundStyle(KannadaTheme.ink.opacity(0.54))
                             }
-                            .padding(.horizontal, 14)
-                            .frame(minHeight: 70)
+                            .padding(.horizontal, 16)
+                            .frame(minHeight: 64)
                             .background(buttonBackground(for: choice, prompt: prompt), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                                    .stroke(KannadaTheme.border, lineWidth: 1)
+                            )
                         }
                         .buttonStyle(.plain)
+                        .disabled(selectedID != nil)
+                        .accessibilityLabel(choice.transliteration)
                     }
                 }
                 .padding(.horizontal, 16)
@@ -231,7 +292,7 @@ private struct QuizPracticeView: View {
                     makeRound()
                 } label: {
                     Label(selectedID == nil ? "Skip" : "Next", systemImage: "arrow.clockwise")
-                        .frame(maxWidth: .infinity, minHeight: 54)
+                        .frame(maxWidth: .infinity, minHeight: 56)
                 }
                 .buttonStyle(.borderedProminent)
                 .tint(KannadaTheme.marigold)
@@ -257,21 +318,15 @@ private struct QuizPracticeView: View {
     }
 
     private func makeRound() {
-        guard let nextPrompt = words.randomElement() else {
+        guard let round = PracticeEngine.makeQuizRound(from: words) else {
             prompt = nil
             choices = []
             selectedID = nil
             return
         }
-        prompt = nextPrompt
+        prompt = round.prompt
+        choices = round.choices
         selectedID = nil
-
-        let distractors = words
-            .filter { $0.id != nextPrompt.id }
-            .shuffled()
-            .prefix(3)
-
-        choices = ([nextPrompt] + Array(distractors)).shuffled()
     }
 }
 
@@ -287,36 +342,27 @@ private struct ObjectWalkPracticeView: View {
 
         var title: String {
             switch self {
-            case .look:
-                "Look"
-            case .hear:
-                "Hear"
-            case .say:
-                "Say"
-            case .find:
-                "Find"
-            case .done:
-                "Done"
+            case .look: "Look"
+            case .hear: "Hear"
+            case .say: "Say"
+            case .find: "Find"
+            case .done: "Done"
             }
         }
 
         var systemImage: String {
             switch self {
-            case .look:
-                "eye.fill"
-            case .hear:
-                "speaker.wave.2.fill"
-            case .say:
-                "mouth.fill"
-            case .find:
-                "hand.tap.fill"
-            case .done:
-                "star.fill"
+            case .look: "eye.fill"
+            case .hear: "speaker.wave.2.fill"
+            case .say: "mouth.fill"
+            case .find: "hand.tap.fill"
+            case .done: "star.fill"
             }
         }
     }
 
     let words: [KannadaWord]
+    @Binding var completedIDs: Set<String>
 
     @EnvironmentObject private var speechOutput: SpeechOutputService
     @EnvironmentObject private var favoritesStore: FavoritesStore
@@ -324,7 +370,6 @@ private struct ObjectWalkPracticeView: View {
     @State private var ladderStep: LadderStep = .look
     @State private var choices: [KannadaWord] = []
     @State private var selectedID: String?
-    @State private var completedWordIDs: Set<String> = []
 
     private var safeIndex: Int {
         guard !words.isEmpty else { return 0 }
@@ -352,24 +397,15 @@ private struct ObjectWalkPracticeView: View {
             if let word {
                 VStack(spacing: 14) {
                     ladderHeader
-
                     objectCard(for: word)
 
                     switch ladderStep {
                     case .look:
-                        primaryAction(
-                            title: "I found it",
-                            systemImage: "eye.fill",
-                            color: KannadaTheme.peacock
-                        ) {
+                        primaryAction(title: "I found it", systemImage: "eye.fill", color: KannadaTheme.peacock) {
                             ladderStep = .hear
                         }
                     case .hear:
-                        primaryAction(
-                            title: "ಕೇಳು · Hear",
-                            systemImage: "speaker.wave.2.fill",
-                            color: KannadaTheme.peacock
-                        ) {
+                        primaryAction(title: "ಕೇಳು · Hear", systemImage: "speaker.wave.2.fill", color: KannadaTheme.peacock) {
                             speechOutput.speak(word.kannada, wordID: word.id)
                             ladderStep = .say
                         }
@@ -389,7 +425,7 @@ private struct ObjectWalkPracticeView: View {
         .onAppear(perform: resetRound)
         .onChange(of: wordSignature) { _, _ in
             index = 0
-            completedWordIDs = []
+            completedIDs = []
             if let firstWord = words.first {
                 resetRound(for: firstWord)
             }
@@ -402,7 +438,6 @@ private struct ObjectWalkPracticeView: View {
                 VStack(spacing: 4) {
                     Image(systemName: step.systemImage)
                         .font(.caption.weight(.black))
-
                     Text(step.title)
                         .font(.caption2.weight(.black))
                         .lineLimit(1)
@@ -420,6 +455,8 @@ private struct ObjectWalkPracticeView: View {
                 )
             }
         }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Step \(ladderStep.title)")
     }
 
     private func objectCard(for word: KannadaWord) -> some View {
@@ -437,7 +474,7 @@ private struct ObjectWalkPracticeView: View {
                     Image(systemName: favoritesStore.contains(word.id) ? "star.fill" : "star")
                         .font(.headline.weight(.black))
                         .foregroundStyle(KannadaTheme.marigold)
-                        .frame(width: 48, height: 48)
+                        .frame(width: 56, height: 56)
                         .background(KannadaTheme.card, in: Circle())
                         .overlay(Circle().stroke(KannadaTheme.border, lineWidth: 1))
                 }
@@ -454,17 +491,19 @@ private struct ObjectWalkPracticeView: View {
                     .multilineTextAlignment(.center)
                     .minimumScaleFactor(0.58)
 
-                Text(word.kannada)
-                    .font(.system(.largeTitle, design: .rounded, weight: .black))
-                    .foregroundStyle(KannadaTheme.ink)
-                    .multilineTextAlignment(.center)
-                    .minimumScaleFactor(0.52)
+                if ladderStep.rawValue >= LadderStep.hear.rawValue {
+                    Text(word.kannada)
+                        .font(.system(.largeTitle, design: .rounded, weight: .black))
+                        .foregroundStyle(KannadaTheme.ink)
+                        .multilineTextAlignment(.center)
+                        .minimumScaleFactor(0.52)
 
-                Text(word.transliteration)
-                    .font(.title3.weight(.black))
-                    .foregroundStyle(KannadaTheme.peacock)
-                    .multilineTextAlignment(.center)
-                    .minimumScaleFactor(0.7)
+                    Text(word.transliteration)
+                        .font(.title3.weight(.black))
+                        .foregroundStyle(KannadaTheme.peacock)
+                        .multilineTextAlignment(.center)
+                        .minimumScaleFactor(0.7)
+                }
             }
         }
         .padding(18)
@@ -500,7 +539,7 @@ private struct ObjectWalkPracticeView: View {
 
     private func findCard(for word: KannadaWord) -> some View {
         VStack(spacing: 12) {
-            Text("Tap the word you found")
+            Text("Tap the matching picture")
                 .font(.headline.weight(.black))
                 .foregroundStyle(KannadaTheme.ink)
 
@@ -508,8 +547,8 @@ private struct ObjectWalkPracticeView: View {
                 ForEach(choices) { choice in
                     Button {
                         selectedID = choice.id
-                        if choice.id == word.id {
-                            completedWordIDs.insert(word.id)
+                        if PracticeEngine.isCorrect(choiceID: choice.id, promptID: word.id) {
+                            completedIDs.insert(word.id)
                             favoritesStore.markPracticed(wordID: word.id, learned: true)
                             speechOutput.speak(word.kannada, wordID: word.id)
                             ladderStep = .done
@@ -517,13 +556,6 @@ private struct ObjectWalkPracticeView: View {
                     } label: {
                         VStack(spacing: 8) {
                             WordIllustrationView(imageName: choice.imageName, category: choice.category, size: 74)
-
-                            Text(choice.kannada)
-                                .font(.title3.weight(.black))
-                                .foregroundStyle(KannadaTheme.ink)
-                                .multilineTextAlignment(.center)
-                                .minimumScaleFactor(0.6)
-
                             Text(choice.displayEnglish)
                                 .font(.caption.weight(.bold))
                                 .foregroundStyle(KannadaTheme.ink.opacity(0.56))
@@ -539,6 +571,7 @@ private struct ObjectWalkPracticeView: View {
                         )
                     }
                     .buttonStyle(.plain)
+                    .accessibilityLabel(choice.displayEnglish)
                 }
             }
 
@@ -555,13 +588,9 @@ private struct ObjectWalkPracticeView: View {
 
     private func doneCard(for word: KannadaWord) -> some View {
         VStack(spacing: 12) {
-            HStack(spacing: 4) {
-                ForEach(0..<3) { _ in
-                    Image(systemName: "star.fill")
-                        .font(.title2.weight(.black))
-                        .foregroundStyle(KannadaTheme.marigold)
-                }
-            }
+            Image(systemName: "star.fill")
+                .font(.title.weight(.black))
+                .foregroundStyle(KannadaTheme.marigold)
 
             Text("You found \(word.kannada)")
                 .font(.system(size: 30, weight: .black, design: .rounded))
@@ -594,11 +623,7 @@ private struct ObjectWalkPracticeView: View {
         }
         .padding(18)
         .frame(maxWidth: .infinity)
-        .background(KannadaTheme.card, in: RoundedRectangle(cornerRadius: 24, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: 24, style: .continuous)
-                .stroke(KannadaTheme.border, lineWidth: 1)
-        )
+        .kannadaCard(cornerRadius: 24)
     }
 
     private func primaryAction(
@@ -619,7 +644,7 @@ private struct ObjectWalkPracticeView: View {
     }
 
     private var nextTitle: String {
-        completedWordIDs.count >= words.count ? "Walk again" : "Next object"
+        completedIDs.count >= words.count ? "Walk again" : "Next object"
     }
 
     private func isActiveOrComplete(_ step: LadderStep) -> Bool {
@@ -645,20 +670,21 @@ private struct ObjectWalkPracticeView: View {
     private func resetRound(for word: KannadaWord) {
         ladderStep = .look
         selectedID = nil
-        choices = makeChoices(for: word)
+        let round = PracticeEngine.makeQuizRound(prompt: word, from: words)
+        choices = round.choices
     }
 
     private func moveToNextWord() {
         guard !words.isEmpty else { return }
         let nextWord: KannadaWord
 
-        if completedWordIDs.count >= words.count {
-            completedWordIDs = []
+        if completedIDs.count >= words.count {
+            completedIDs = []
             index = 0
             nextWord = words[0]
         } else {
             var nextIndex = (safeIndex + 1) % words.count
-            while completedWordIDs.contains(words[nextIndex].id), nextIndex != safeIndex {
+            while completedIDs.contains(words[nextIndex].id), nextIndex != safeIndex {
                 nextIndex = (nextIndex + 1) % words.count
             }
             index = nextIndex
@@ -666,14 +692,5 @@ private struct ObjectWalkPracticeView: View {
         }
 
         resetRound(for: nextWord)
-    }
-
-    private func makeChoices(for word: KannadaWord) -> [KannadaWord] {
-        let distractors = words
-            .filter { $0.id != word.id }
-            .shuffled()
-            .prefix(3)
-
-        return ([word] + Array(distractors)).shuffled()
     }
 }

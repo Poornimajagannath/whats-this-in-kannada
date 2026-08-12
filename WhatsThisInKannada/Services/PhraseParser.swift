@@ -10,9 +10,8 @@ struct PhraseParser {
 
     static func normalize(_ input: String) -> String {
         input
-            .folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current)
             .lowercased()
-            .replacingOccurrences(of: #"[^a-z0-9\s']"#, with: " ", options: .regularExpression)
+            .replacingOccurrences(of: #"[^\p{L}\p{M}\p{N}\s']"#, with: " ", options: .regularExpression)
             .replacingOccurrences(of: #"\s+"#, with: " ", options: .regularExpression)
             .trimmingCharacters(in: .whitespacesAndNewlines)
     }

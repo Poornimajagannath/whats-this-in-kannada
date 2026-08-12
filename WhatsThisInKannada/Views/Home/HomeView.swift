@@ -3,17 +3,17 @@ import SwiftUI
 struct HomeView: View {
     let catalog: WordCatalog
 
+    @EnvironmentObject private var session: AppSession
     @EnvironmentObject private var speechOutput: SpeechOutputService
     @EnvironmentObject private var favoritesStore: FavoritesStore
     @StateObject private var speechService = SpeechService()
 
     @State private var typedText = ""
     @State private var result: LookupResult?
+    @State private var suggestions: [KannadaWord] = []
     @State private var isResolving = false
     @State private var lastResolvedTranscript = ""
     @State private var selectedTinyWorldID: String?
-
-    private let translationService = TranslationService()
 
     var body: some View {
         NavigationStack {
@@ -33,9 +33,14 @@ struct HomeView: View {
                                 isFavorite: isFavorite(result),
                                 isSpeaking: speechOutput.speakingWordID == result.wordID,
                                 onSpeak: { speechOutput.speak(result.kannada, wordID: result.wordID) },
-                                onFavorite: { toggleFavorite(result) }
+                                onFavorite: { toggleFavorite(result) },
+                                onTryAnother: clearResult
                             )
                             .transition(.scale.combined(with: .opacity))
+
+                            if result.source == .unknown, !suggestions.isEmpty {
+                                suggestionRow
+                            }
                         } else {
                             tinyWorldPrompt
                             categoryCards
@@ -85,7 +90,7 @@ struct HomeView: View {
                 HStack(spacing: 5) {
                     Image(systemName: "star.fill")
                         .foregroundStyle(KannadaTheme.marigold)
-                    Text("\(max(5, favoritesStore.savedWords.count))")
+                    Text("\(favoritesStore.savedWords.count)")
                         .font(.caption.weight(.black))
                 }
                 .foregroundStyle(.white)
@@ -201,7 +206,7 @@ struct HomeView: View {
     }
 
     private var tinyWorldWords: [KannadaWord] {
-        let preferredIDs = ["amma", "appa", "magu", "bekku", "naayi", "baalehannu", "sebu", "aane", "mango"]
+        let preferredIDs = ["amma", "appa", "magu", "bekku", "naayi", "baalehannu", "sebu", "aane"]
         let preferred = preferredIDs.compactMap { catalog.lookup($0) }
         let fallback = catalog.words.prefix(8)
         let merged = preferred + fallback
@@ -311,6 +316,7 @@ struct HomeView: View {
             result = .curated(word, query: "What's that?")
         }
         speechOutput.speak(word.kannada, wordID: word.id)
+        suggestions = []
     }
 
     private var isRunningInSimulator: Bool {
@@ -373,10 +379,7 @@ struct HomeView: View {
         let count = catalog.words.filter { $0.category == category }.count
 
         return Button {
-            if let sample {
-                typedText = sample.english
-                Task { await resolve(sample.english) }
-            }
+            session.openLibrary(category: category)
         } label: {
             VStack(alignment: .leading, spacing: 10) {
                 WordIllustrationView(
@@ -409,6 +412,7 @@ struct HomeView: View {
             )
         }
         .buttonStyle(.plain)
+        .accessibilityLabel("Open \(category.displayName) in Learn")
     }
 
     private var starterWords: some View {
@@ -425,7 +429,7 @@ struct HomeView: View {
                     } label: {
                         Text(sample.capitalized)
                             .font(.callout.weight(.bold))
-                            .frame(maxWidth: .infinity, minHeight: 48)
+                            .frame(maxWidth: .infinity, minHeight: 56)
                     }
                     .buttonStyle(.borderedProminent)
                     .tint(KannadaTheme.peacock.opacity(0.16))
@@ -445,6 +449,7 @@ struct HomeView: View {
         defer { isResolving = false }
 
         if let word = catalog.lookupFromPhrase(trimmed) {
+            suggestions = []
             withAnimation(.spring(response: 0.32, dampingFraction: 0.82)) {
                 result = .curated(word, query: trimmed)
             }
@@ -452,16 +457,54 @@ struct HomeView: View {
             return
         }
 
-        do {
-            let translated = try await translationService.translateEnglishToKannada(trimmed)
-            withAnimation(.spring(response: 0.32, dampingFraction: 0.82)) {
-                result = translated
-            }
-        } catch {
-            withAnimation(.spring(response: 0.32, dampingFraction: 0.82)) {
-                result = .unknown(query: trimmed)
+        suggestions = catalog.suggestions(for: trimmed)
+        withAnimation(.spring(response: 0.32, dampingFraction: 0.82)) {
+            result = .unknown(query: trimmed)
+        }
+    }
+
+    private var suggestionRow: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Try one of these")
+                .font(.headline.weight(.black))
+                .foregroundStyle(KannadaTheme.ink)
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 10) {
+                    ForEach(suggestions) { word in
+                        Button {
+                            typedText = word.english
+                            Task { await resolve(word.english) }
+                        } label: {
+                            VStack(spacing: 6) {
+                                WordIllustrationView(imageName: word.imageName, category: word.category, size: 52)
+                                Text(word.displayEnglish)
+                                    .font(.caption.weight(.black))
+                                    .foregroundStyle(KannadaTheme.ink)
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.7)
+                            }
+                            .frame(width: 86, height: 96)
+                            .kannadaCard(cornerRadius: 16)
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel("Try \(word.displayEnglish)")
+                    }
+                }
             }
         }
+        .padding(16)
+        .kannadaCard()
+    }
+
+    private func clearResult() {
+        withAnimation(.spring(response: 0.32, dampingFraction: 0.82)) {
+            result = nil
+            suggestions = []
+        }
+        typedText = ""
+        lastResolvedTranscript = ""
+        speechService.resetTranscript()
     }
 
     private func isFavorite(_ result: LookupResult) -> Bool {

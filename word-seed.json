@@ -154,21 +154,21 @@
   },
   {
     "id": "geleya",
-    "english": "boy friend",
+    "english": "friend",
     "kannada": "ಗೆಳೆಯ",
     "transliteration": "geleya",
     "imageName": "family_friend_boy",
     "category": "family",
-    "aliases": ["friend", "boy friend", "male friend"]
+    "aliases": ["friend", "male friend"]
   },
   {
     "id": "gelathi",
-    "english": "girl friend",
+    "english": "friend",
     "kannada": "ಗೆಳತಿ",
     "transliteration": "gelathi",
     "imageName": "family_friend_girl",
     "category": "family",
-    "aliases": ["friend", "girl friend", "female friend"]
+    "aliases": ["friend", "female friend"]
   },
   {
     "id": "naayi",

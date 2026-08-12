@@ -10,10 +10,14 @@ struct LibraryView: View {
 
     let catalog: WordCatalog
 
+    @EnvironmentObject private var session: AppSession
     @State private var searchText = ""
-    @State private var selectedCategory: WordCategory?
     @State private var mode: LibraryMode = .grid
     @State private var browseIndex = 0
+
+    private var selectedCategory: WordCategory? {
+        session.libraryCategory
+    }
 
     private var filteredWords: [KannadaWord] {
         catalog.search(searchText, category: selectedCategory)
@@ -92,7 +96,7 @@ struct LibraryView: View {
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
 
-                Text("\(selectedCategory?.displayName ?? "All words") · tap a card to hear it")
+                Text("\(selectedCategory?.displayName ?? "All words") · tap a card to open it")
                     .font(.callout.weight(.semibold))
                     .opacity(0.84)
             }
@@ -107,12 +111,12 @@ struct LibraryView: View {
     private var categoryPicker: some View {
         HStack(spacing: 8) {
             categoryButton(title: "All", systemImage: "sparkles", isSelected: selectedCategory == nil) {
-                selectedCategory = nil
+                session.libraryCategory = nil
             }
 
             ForEach(WordCategory.allCases) { category in
                 categoryButton(title: category.displayName, systemImage: category.symbolName, isSelected: selectedCategory == category) {
-                    selectedCategory = category
+                    session.libraryCategory = category
                 }
             }
         }
@@ -139,7 +143,7 @@ struct LibraryView: View {
                     .lineLimit(1)
                     .minimumScaleFactor(0.65)
             }
-            .frame(maxWidth: .infinity, minHeight: mode == .browse ? 48 : 54)
+            .frame(maxWidth: .infinity, minHeight: 56)
         }
         .buttonStyle(.plain)
         .foregroundStyle(isSelected ? .white : KannadaTheme.ink)
@@ -187,7 +191,7 @@ private struct LibraryBrowseView: View {
                         Image(systemName: favoritesStore.contains(word.id) ? "star.fill" : "star")
                             .font(.headline.weight(.black))
                             .foregroundStyle(KannadaTheme.marigold)
-                            .frame(width: 42, height: 42)
+                            .frame(width: 56, height: 56)
                             .background(KannadaTheme.card, in: Circle())
                             .overlay(Circle().stroke(KannadaTheme.border, lineWidth: 1))
                     }
@@ -227,7 +231,7 @@ private struct LibraryBrowseView: View {
                     } label: {
                         Image(systemName: "chevron.left")
                             .font(.headline.weight(.black))
-                            .frame(width: 50, height: 50)
+                            .frame(width: 56, height: 56)
                     }
                     .buttonStyle(.borderedProminent)
                     .tint(KannadaTheme.border.opacity(0.80))
@@ -240,7 +244,7 @@ private struct LibraryBrowseView: View {
                         Label("ಕೇಳು · Listen", systemImage: "speaker.wave.2.fill")
                             .font(.headline.weight(.black))
                             .foregroundStyle(.white)
-                            .frame(maxWidth: .infinity, minHeight: 50)
+                            .frame(maxWidth: .infinity, minHeight: 56)
                             .background(KannadaTheme.peacock, in: Capsule())
                     }
                     .buttonStyle(.plain)
@@ -250,7 +254,7 @@ private struct LibraryBrowseView: View {
                     } label: {
                         Image(systemName: "chevron.right")
                             .font(.headline.weight(.black))
-                            .frame(width: 50, height: 50)
+                            .frame(width: 56, height: 56)
                     }
                     .buttonStyle(.borderedProminent)
                     .tint(KannadaTheme.marigold)
