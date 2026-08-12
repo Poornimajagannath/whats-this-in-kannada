@@ -1,0 +1,533 @@
+[
+  {
+    "id": "amma",
+    "english": "mother",
+    "kannada": "ಅಮ್ಮ",
+    "transliteration": "amma",
+    "imageName": "family_amma",
+    "category": "family",
+    "aliases": ["mom", "mommy", "mama", "amma"]
+  },
+  {
+    "id": "appa",
+    "english": "father",
+    "kannada": "ಅಪ್ಪ",
+    "transliteration": "appa",
+    "imageName": "family_appa",
+    "category": "family",
+    "aliases": ["dad", "daddy", "papa", "appa"]
+  },
+  {
+    "id": "ajji",
+    "english": "grandmother",
+    "kannada": "ಅಜ್ಜಿ",
+    "transliteration": "ajji",
+    "imageName": "family_ajji",
+    "category": "family",
+    "aliases": ["grandma", "granny", "ajji"]
+  },
+  {
+    "id": "taatha",
+    "english": "grandfather",
+    "kannada": "ತಾತ",
+    "transliteration": "taatha",
+    "imageName": "family_taatha",
+    "category": "family",
+    "aliases": ["grandpa", "granddad", "tatha", "taatha"]
+  },
+  {
+    "id": "anna",
+    "english": "elder brother",
+    "kannada": "ಅಣ್ಣ",
+    "transliteration": "anna",
+    "imageName": "family_anna",
+    "category": "family",
+    "aliases": ["big brother", "brother", "anna"]
+  },
+  {
+    "id": "akka",
+    "english": "elder sister",
+    "kannada": "ಅಕ್ಕ",
+    "transliteration": "akka",
+    "imageName": "family_akka",
+    "category": "family",
+    "aliases": ["big sister", "sister", "akka"]
+  },
+  {
+    "id": "tamma",
+    "english": "younger brother",
+    "kannada": "ತಮ್ಮ",
+    "transliteration": "tamma",
+    "imageName": "family_tamma",
+    "category": "family",
+    "aliases": ["little brother", "younger brother", "tamma"]
+  },
+  {
+    "id": "thangi",
+    "english": "younger sister",
+    "kannada": "ತಂಗಿ",
+    "transliteration": "thangi",
+    "imageName": "family_thangi",
+    "category": "family",
+    "aliases": ["little sister", "younger sister", "thangi"]
+  },
+  {
+    "id": "maava",
+    "english": "uncle",
+    "kannada": "ಮಾವ",
+    "transliteration": "maava",
+    "imageName": "family_maava",
+    "category": "family",
+    "aliases": ["uncle", "maternal uncle", "maava"]
+  },
+  {
+    "id": "atte",
+    "english": "aunt",
+    "kannada": "ಅತ್ತೆ",
+    "transliteration": "atte",
+    "imageName": "family_atte",
+    "category": "family",
+    "aliases": ["aunt", "aunty", "paternal aunt", "atte"]
+  },
+  {
+    "id": "chikkappa",
+    "english": "father's younger brother",
+    "kannada": "ಚಿಕ್ಕಪ್ಪ",
+    "transliteration": "chikkappa",
+    "imageName": "family_chikkappa",
+    "category": "family",
+    "aliases": ["uncle", "chikkappa"]
+  },
+  {
+    "id": "doddappa",
+    "english": "father's elder brother",
+    "kannada": "ದೊಡ್ಡಪ್ಪ",
+    "transliteration": "doddappa",
+    "imageName": "family_doddappa",
+    "category": "family",
+    "aliases": ["uncle", "doddappa"]
+  },
+  {
+    "id": "chikkamma",
+    "english": "mother's sister",
+    "kannada": "ಚಿಕ್ಕಮ್ಮ",
+    "transliteration": "chikkamma",
+    "imageName": "family_chikkamma",
+    "category": "family",
+    "aliases": ["aunt", "aunty", "chikkamma"]
+  },
+  {
+    "id": "doddamma",
+    "english": "elder aunt",
+    "kannada": "ದೊಡ್ಡಮ್ಮ",
+    "transliteration": "doddamma",
+    "imageName": "family_doddamma",
+    "category": "family",
+    "aliases": ["aunt", "aunty", "doddamma"]
+  },
+  {
+    "id": "magu",
+    "english": "baby",
+    "kannada": "ಮಗು",
+    "transliteration": "magu",
+    "imageName": "family_magu",
+    "category": "family",
+    "aliases": ["baby", "child", "kid", "magu"]
+  },
+  {
+    "id": "maga",
+    "english": "son",
+    "kannada": "ಮಗ",
+    "transliteration": "maga",
+    "imageName": "family_son",
+    "category": "family",
+    "aliases": ["son", "boy"]
+  },
+  {
+    "id": "magalu",
+    "english": "daughter",
+    "kannada": "ಮಗಳು",
+    "transliteration": "magalu",
+    "imageName": "family_daughter",
+    "category": "family",
+    "aliases": ["daughter", "girl"]
+  },
+  {
+    "id": "geleya",
+    "english": "friend",
+    "kannada": "ಗೆಳೆಯ",
+    "transliteration": "geleya",
+    "imageName": "family_friend_boy",
+    "category": "family",
+    "aliases": ["friend", "male friend"]
+  },
+  {
+    "id": "gelathi",
+    "english": "friend",
+    "kannada": "ಗೆಳತಿ",
+    "transliteration": "gelathi",
+    "imageName": "family_friend_girl",
+    "category": "family",
+    "aliases": ["friend", "female friend"]
+  },
+  {
+    "id": "naayi",
+    "english": "dog",
+    "kannada": "ನಾಯಿ",
+    "transliteration": "naayi",
+    "imageName": "animal_dog",
+    "category": "animals",
+    "aliases": ["dog", "puppy"]
+  },
+  {
+    "id": "bekku",
+    "english": "cat",
+    "kannada": "ಬೆಕ್ಕು",
+    "transliteration": "bekku",
+    "imageName": "animal_cat",
+    "category": "animals",
+    "aliases": ["cat", "kitten"]
+  },
+  {
+    "id": "hasu",
+    "english": "cow",
+    "kannada": "ಹಸು",
+    "transliteration": "hasu",
+    "imageName": "animal_cow",
+    "category": "animals",
+    "aliases": ["cow"]
+  },
+  {
+    "id": "emme",
+    "english": "buffalo",
+    "kannada": "ಎಮ್ಮೆ",
+    "transliteration": "emme",
+    "imageName": "animal_buffalo",
+    "category": "animals",
+    "aliases": ["buffalo"]
+  },
+  {
+    "id": "meke",
+    "english": "goat",
+    "kannada": "ಮೇಕೆ",
+    "transliteration": "meke",
+    "imageName": "animal_goat",
+    "category": "animals",
+    "aliases": ["goat"]
+  },
+  {
+    "id": "kuri",
+    "english": "sheep",
+    "kannada": "ಕುರಿ",
+    "transliteration": "kuri",
+    "imageName": "animal_sheep",
+    "category": "animals",
+    "aliases": ["sheep", "lamb"]
+  },
+  {
+    "id": "kudure",
+    "english": "horse",
+    "kannada": "ಕುದುರೆ",
+    "transliteration": "kudure",
+    "imageName": "animal_horse",
+    "category": "animals",
+    "aliases": ["horse", "pony"]
+  },
+  {
+    "id": "aane",
+    "english": "elephant",
+    "kannada": "ಆನೆ",
+    "transliteration": "aane",
+    "imageName": "animal_elephant",
+    "category": "animals",
+    "aliases": ["elephant"]
+  },
+  {
+    "id": "huli",
+    "english": "tiger",
+    "kannada": "ಹುಲಿ",
+    "transliteration": "huli",
+    "imageName": "animal_tiger",
+    "category": "animals",
+    "aliases": ["tiger"]
+  },
+  {
+    "id": "simha",
+    "english": "lion",
+    "kannada": "ಸಿಂಹ",
+    "transliteration": "simha",
+    "imageName": "animal_lion",
+    "category": "animals",
+    "aliases": ["lion"]
+  },
+  {
+    "id": "karadi",
+    "english": "bear",
+    "kannada": "ಕರಡಿ",
+    "transliteration": "karadi",
+    "imageName": "animal_bear",
+    "category": "animals",
+    "aliases": ["bear"]
+  },
+  {
+    "id": "jinke",
+    "english": "deer",
+    "kannada": "ಜಿಂಕೆ",
+    "transliteration": "jinke",
+    "imageName": "animal_deer",
+    "category": "animals",
+    "aliases": ["deer"]
+  },
+  {
+    "id": "koti",
+    "english": "monkey",
+    "kannada": "ಕೋತಿ",
+    "transliteration": "koti",
+    "imageName": "animal_monkey",
+    "category": "animals",
+    "aliases": ["monkey"]
+  },
+  {
+    "id": "mola",
+    "english": "rabbit",
+    "kannada": "ಮೊಲ",
+    "transliteration": "mola",
+    "imageName": "animal_rabbit",
+    "category": "animals",
+    "aliases": ["rabbit", "bunny"]
+  },
+  {
+    "id": "koli",
+    "english": "chicken",
+    "kannada": "ಕೋಳಿ",
+    "transliteration": "koli",
+    "imageName": "animal_chicken",
+    "category": "animals",
+    "aliases": ["chicken", "hen", "rooster"]
+  },
+  {
+    "id": "baatukoli",
+    "english": "duck",
+    "kannada": "ಬಾತುಕೋಳಿ",
+    "transliteration": "baatukoli",
+    "imageName": "animal_duck",
+    "category": "animals",
+    "aliases": ["duck"]
+  },
+  {
+    "id": "hakki",
+    "english": "bird",
+    "kannada": "ಹಕ್ಕಿ",
+    "transliteration": "hakki",
+    "imageName": "animal_bird",
+    "category": "animals",
+    "aliases": ["bird"]
+  },
+  {
+    "id": "meenu",
+    "english": "fish",
+    "kannada": "ಮೀನು",
+    "transliteration": "meenu",
+    "imageName": "animal_fish",
+    "category": "animals",
+    "aliases": ["fish"]
+  },
+  {
+    "id": "kappe",
+    "english": "frog",
+    "kannada": "ಕಪ್ಪೆ",
+    "transliteration": "kappe",
+    "imageName": "animal_frog",
+    "category": "animals",
+    "aliases": ["frog"]
+  },
+  {
+    "id": "haavu",
+    "english": "snake",
+    "kannada": "ಹಾವು",
+    "transliteration": "haavu",
+    "imageName": "animal_snake",
+    "category": "animals",
+    "aliases": ["snake"]
+  },
+  {
+    "id": "chitte",
+    "english": "butterfly",
+    "kannada": "ಚಿಟ್ಟೆ",
+    "transliteration": "chitte",
+    "imageName": "animal_butterfly",
+    "category": "animals",
+    "aliases": ["butterfly"]
+  },
+  {
+    "id": "aame",
+    "english": "turtle",
+    "kannada": "ಆಮೆ",
+    "transliteration": "aame",
+    "imageName": "animal_turtle",
+    "category": "animals",
+    "aliases": ["turtle", "tortoise"]
+  },
+  {
+    "id": "iruve",
+    "english": "ant",
+    "kannada": "ಇರುವೆ",
+    "transliteration": "iruve",
+    "imageName": "animal_ant",
+    "category": "animals",
+    "aliases": ["ant"]
+  },
+  {
+    "id": "sebu",
+    "english": "apple",
+    "kannada": "ಸೇಬು",
+    "transliteration": "sebu",
+    "imageName": "fruit_apple",
+    "category": "fruits",
+    "aliases": ["apple"]
+  },
+  {
+    "id": "baalehannu",
+    "english": "banana",
+    "kannada": "ಬಾಳೆಹಣ್ಣು",
+    "transliteration": "baalehannu",
+    "imageName": "fruit_banana",
+    "category": "fruits",
+    "aliases": ["banana"]
+  },
+  {
+    "id": "maavinahannu",
+    "english": "mango",
+    "kannada": "ಮಾವಿನಹಣ್ಣು",
+    "transliteration": "maavinahannu",
+    "imageName": "fruit_mango",
+    "category": "fruits",
+    "aliases": ["mango"]
+  },
+  {
+    "id": "kittale",
+    "english": "orange",
+    "kannada": "ಕಿತ್ತಳೆ",
+    "transliteration": "kittale",
+    "imageName": "fruit_orange",
+    "category": "fruits",
+    "aliases": ["orange"]
+  },
+  {
+    "id": "draakshi",
+    "english": "grapes",
+    "kannada": "ದ್ರಾಕ್ಷಿ",
+    "transliteration": "draakshi",
+    "imageName": "fruit_grapes",
+    "category": "fruits",
+    "aliases": ["grape", "grapes"]
+  },
+  {
+    "id": "kallangadi",
+    "english": "watermelon",
+    "kannada": "ಕಲ್ಲಂಗಡಿ",
+    "transliteration": "kallangadi",
+    "imageName": "fruit_watermelon",
+    "category": "fruits",
+    "aliases": ["watermelon"]
+  },
+  {
+    "id": "parangihannu",
+    "english": "papaya",
+    "kannada": "ಪರಂಗಿಹಣ್ಣು",
+    "transliteration": "parangihannu",
+    "imageName": "fruit_papaya",
+    "category": "fruits",
+    "aliases": ["papaya"]
+  },
+  {
+    "id": "ananas",
+    "english": "pineapple",
+    "kannada": "ಅನಾನಸ್",
+    "transliteration": "ananas",
+    "imageName": "fruit_pineapple",
+    "category": "fruits",
+    "aliases": ["pineapple"]
+  },
+  {
+    "id": "seebehannu",
+    "english": "guava",
+    "kannada": "ಸೀಬೆಹಣ್ಣು",
+    "transliteration": "seebehannu",
+    "imageName": "fruit_guava",
+    "category": "fruits",
+    "aliases": ["guava"]
+  },
+  {
+    "id": "daalimbe",
+    "english": "pomegranate",
+    "kannada": "ದಾಳಿಂಬೆ",
+    "transliteration": "daalimbe",
+    "imageName": "fruit_pomegranate",
+    "category": "fruits",
+    "aliases": ["pomegranate"]
+  },
+  {
+    "id": "straaberi",
+    "english": "strawberry",
+    "kannada": "ಸ್ಟ್ರಾಬೆರಿ",
+    "transliteration": "straaberi",
+    "imageName": "fruit_strawberry",
+    "category": "fruits",
+    "aliases": ["strawberry"]
+  },
+  {
+    "id": "thenginakaayi",
+    "english": "coconut",
+    "kannada": "ತೆಂಗಿನಕಾಯಿ",
+    "transliteration": "thenginakaayi",
+    "imageName": "fruit_coconut",
+    "category": "fruits",
+    "aliases": ["coconut"]
+  },
+  {
+    "id": "nimbehannu",
+    "english": "lemon",
+    "kannada": "ನಿಂಬೆಹಣ್ಣು",
+    "transliteration": "nimbehannu",
+    "imageName": "fruit_lemon",
+    "category": "fruits",
+    "aliases": ["lemon", "lime"]
+  },
+  {
+    "id": "halasinahannu",
+    "english": "jackfruit",
+    "kannada": "ಹಲಸಿನಹಣ್ಣು",
+    "transliteration": "halasinahannu",
+    "imageName": "fruit_jackfruit",
+    "category": "fruits",
+    "aliases": ["jackfruit"]
+  },
+  {
+    "id": "kharjoora",
+    "english": "dates",
+    "kannada": "ಖರ್ಜೂರ",
+    "transliteration": "kharjoora",
+    "imageName": "fruit_dates",
+    "category": "fruits",
+    "aliases": ["date", "dates"]
+  },
+  {
+    "id": "karbooja",
+    "english": "muskmelon",
+    "kannada": "ಕರಬೂಜ",
+    "transliteration": "karbooja",
+    "imageName": "fruit_muskmelon",
+    "category": "fruits",
+    "aliases": ["muskmelon", "cantaloupe"]
+  },
+  {
+    "id": "sapota",
+    "english": "sapota",
+    "kannada": "ಸಪೋಟ",
+    "transliteration": "sapota",
+    "imageName": "fruit_sapota",
+    "category": "fruits",
+    "aliases": ["sapota", "chikoo", "chiku"]
+  }
+]

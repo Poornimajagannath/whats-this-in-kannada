@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "https://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDisplayName</key>
+	<string>What's This in Kannada Preview</string>
+	<key>CFBundleExecutable</key>
+	<string>WhatsThisInKannadaPreview</string>
+	<key>CFBundleIdentifier</key>
+	<string>app.whatsthiskannada.preview</string>
+	<key>CFBundleName</key>
+	<string>WhatsThisInKannadaPreview</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.0</string>
+	<key>CFBundleVersion</key>
+	<string>1</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>14.0</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>The preview can request microphone access if voice input is enabled.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>The preview can request speech recognition access if voice input is enabled.</string>
+	<key>NSHighResolutionCapable</key>
+	<true/>
+</dict>
+</plist>

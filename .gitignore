@@ -1,0 +1,11 @@
+.DS_Store
+**/.DS_Store
+
+.build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+
+.gstack/
+
+Whats This in Kannada/
