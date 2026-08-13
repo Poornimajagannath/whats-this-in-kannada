@@ -6,6 +6,7 @@ struct ResultCardView: View {
     let isSpeaking: Bool
     let onSpeak: () -> Void
     let onFavorite: () -> Void
+    var onTryAnother: (() -> Void)? = nil
 
     var body: some View {
         VStack(spacing: 20) {
@@ -47,6 +48,7 @@ struct ResultCardView: View {
                 .buttonStyle(.borderedProminent)
                 .tint(KannadaTheme.peacock)
                 .disabled(!result.canSpeak)
+                .accessibilityLabel(isSpeaking ? "Speaking" : "Listen")
 
                 Button(action: onFavorite) {
                     Image(systemName: isFavorite ? "star.fill" : "star")
@@ -57,6 +59,17 @@ struct ResultCardView: View {
                 .tint(KannadaTheme.marigold)
                 .disabled(!result.canFavorite)
                 .accessibilityLabel(isFavorite ? "Remove favorite" : "Save favorite")
+            }
+
+            if let onTryAnother {
+                Button(action: onTryAnother) {
+                    Label("Try another", systemImage: "arrow.counterclockwise")
+                        .font(.headline.weight(.black))
+                        .frame(maxWidth: .infinity, minHeight: 52)
+                }
+                .buttonStyle(.bordered)
+                .tint(KannadaTheme.ink)
+                .accessibilityLabel("Try another word")
             }
         }
         .padding(20)

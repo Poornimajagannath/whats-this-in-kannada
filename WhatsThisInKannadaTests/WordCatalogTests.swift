@@ -121,6 +121,20 @@ final class WordCatalogTests: XCTestCase {
         XCTAssertNil(ambiguousCatalog.lookupFromPhrase("show me friend"))
     }
 
+    func testLookupFromPhraseAcceptsKannadaAndSuggestions() throws {
+        let catalog = WordCatalog(words: try Self.loadProductionSeedWords())
+
+        XCTAssertEqual(catalog.lookupFromPhrase("ಅಮ್ಮ")?.id, "amma")
+        XCTAssertEqual(catalog.lookupFromPhrase("this is an elephant")?.id, "aane")
+        XCTAssertNil(catalog.lookupFromPhrase("fan"))
+
+        let mangoSuggestions = catalog.suggestions(for: "mang", limit: 3)
+        XCTAssertEqual(mangoSuggestions.first?.id, "maavinahannu")
+
+        let unknownSuggestions = catalog.suggestions(for: "xyzzy", limit: 3)
+        XCTAssertEqual(unknownSuggestions.map(\.id), Array(KannadaWord.firstUsefulWordIDs.prefix(3)))
+    }
+
     private static func loadProductionSeedWords(filePath: String = #filePath) throws -> [KannadaWord] {
         var directory = URL(fileURLWithPath: filePath).deletingLastPathComponent()
 

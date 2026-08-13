@@ -106,11 +106,57 @@ struct WordCatalog {
     }
 
     func lookupFromPhrase(_ phrase: String) -> KannadaWord? {
+        let trimmed = phrase.trimmingCharacters(in: .whitespacesAndNewlines)
+        if let direct = safeCuratedLookup(trimmed) {
+            return direct
+        }
+
         guard let keyword = PhraseParser.extractKeyword(from: phrase, catalog: self) else {
             return nil
         }
 
         return safeCuratedLookup(keyword)
+    }
+
+    func suggestions(for query: String, limit: Int = 3) -> [KannadaWord] {
+        let normalizedQuery = PhraseParser.normalize(query)
+        guard !normalizedQuery.isEmpty else {
+            return Array(firstUsefulWords().prefix(max(0, limit)))
+        }
+
+        let ranked = words.compactMap { word -> (KannadaWord, Int)? in
+            let terms = word.searchableTerms
+                .map(PhraseParser.normalize)
+                .filter { !$0.isEmpty }
+
+            if terms.contains(where: { $0 == normalizedQuery }) {
+                return (word, 0)
+            }
+            if terms.contains(where: { $0.hasPrefix(normalizedQuery) || normalizedQuery.hasPrefix($0) }) {
+                return (word, 1)
+            }
+            if terms.contains(where: { $0.contains(normalizedQuery) || normalizedQuery.contains($0) }) {
+                return (word, 2)
+            }
+            return nil
+        }
+        .sorted { lhs, rhs in
+            if lhs.1 != rhs.1 {
+                return lhs.1 < rhs.1
+            }
+            return lhs.0.id < rhs.0.id
+        }
+
+        var seen = Set<String>()
+        let matches = ranked.compactMap { pair -> KannadaWord? in
+            seen.insert(pair.0.id).inserted ? pair.0 : nil
+        }
+
+        if matches.isEmpty {
+            return Array(firstUsefulWords().prefix(max(0, limit)))
+        }
+
+        return Array(matches.prefix(max(0, limit)))
     }
 
     private static func loadWords(from bundle: Bundle) -> [KannadaWord] {

@@ -3,7 +3,11 @@ import SwiftUI
 struct FavoritesView: View {
     let catalog: WordCatalog
 
+    @EnvironmentObject private var session: AppSession
+    @EnvironmentObject private var speechOutput: SpeechOutputService
     @EnvironmentObject private var favoritesStore: FavoritesStore
+
+    @State private var isUnlocked = false
 
     private var savedCount: Int {
         favoritesStore.savedWords.count
@@ -15,47 +19,95 @@ struct FavoritesView: View {
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 18) {
-                    header
-                    trustStatusGrid
-                    plannedControls
-                    dataNotes
-                    localFavorites
+            Group {
+                if isUnlocked {
+                    unlockedContent
+                } else {
+                    lockGate
                 }
-                .padding(16)
-                .padding(.bottom, 96)
             }
             .background(StorybookPaperBackground())
             .navigationTitle("Parent")
+            .onChange(of: session.selectedTab) { _, tab in
+                if tab != .parent {
+                    isUnlocked = false
+                }
+            }
+        }
+    }
+
+    private var lockGate: some View {
+        VStack(spacing: 22) {
+            Spacer()
+
+            Image(systemName: "lock.shield.fill")
+                .font(.system(size: 54, weight: .black))
+                .foregroundStyle(.white)
+                .frame(width: 96, height: 96)
+                .background(KannadaTheme.peacock, in: Circle())
+
+            VStack(spacing: 8) {
+                Text("Parent space")
+                    .font(.system(size: 32, weight: .black, design: .rounded))
+                    .foregroundStyle(KannadaTheme.ink)
+
+                Text("Hold the button for 2 seconds to open saved words and privacy notes.")
+                    .font(.callout.weight(.semibold))
+                    .foregroundStyle(KannadaTheme.ink.opacity(0.68))
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 24)
+            }
+
+            Text("Hold to open")
+                .font(.headline.weight(.black))
+                .foregroundStyle(.white)
+                .frame(maxWidth: 280, minHeight: 58)
+                .background(KannadaTheme.peacock, in: Capsule())
+                .onLongPressGesture(minimumDuration: 2) {
+                    isUnlocked = true
+                }
+                .accessibilityLabel("Hold for two seconds to open parent space")
+                .accessibilityAddTraits(.isButton)
+
+            Spacer()
+        }
+        .padding(24)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private var unlockedContent: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 18) {
+                header
+                localFavorites
+                trustStatusGrid
+                laterNotes
+            }
+            .padding(16)
+            .padding(.bottom, 96)
         }
     }
 
     private var header: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 12) {
-                Image(systemName: "lock.shield.fill")
+                Image(systemName: "lock.open.fill")
                     .font(.system(size: 32, weight: .black))
                     .frame(width: 54, height: 54)
                     .background(.white.opacity(0.18), in: Circle())
 
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Parent trust gate")
+                    Text("Saved words")
                         .font(.system(size: 28, weight: .black, design: .rounded))
                         .lineLimit(1)
                         .minimumScaleFactor(0.76)
 
-                    Text("V1 keeps learning local and parent-owned.")
+                    Text("Favorites stay on this iPhone. Nothing syncs to an account.")
                         .font(.callout.weight(.semibold))
                         .opacity(0.90)
                         .fixedSize(horizontal: false, vertical: true)
                 }
             }
-
-            Text("No camera is used in this release. Voice input is not saved as audio. Favorites stay on this device.")
-                .font(.footnote.weight(.bold))
-                .opacity(0.86)
-                .fixedSize(horizontal: false, vertical: true)
         }
         .foregroundStyle(.white)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -68,21 +120,19 @@ struct FavoritesView: View {
             statusCard(
                 icon: "camera.slash.fill",
                 title: "No camera",
-                detail: "V1 has no camera capture, photo roll access, or image upload.",
+                detail: "This version has no camera, photo library, or image upload.",
                 tint: KannadaTheme.parentBlue
             )
-
             statusCard(
                 icon: "mic.slash.fill",
                 title: "No stored speech",
-                detail: "The app does not save voice recordings or keep spoken audio by default.",
+                detail: "Spoken audio is used to find a word, then discarded. It is not saved.",
                 tint: KannadaTheme.peacock
             )
-
             statusCard(
                 icon: "externaldrive.fill",
                 title: "\(savedCount) local",
-                detail: "Saved words use local device storage. Nothing syncs to an account in V1.",
+                detail: "Saved words use on-device storage only.",
                 tint: KannadaTheme.marigold
             )
         }
@@ -112,120 +162,27 @@ struct FavoritesView: View {
         .kannadaCard(cornerRadius: 18)
     }
 
-    private var plannedControls: some View {
+    private var laterNotes: some View {
         VStack(alignment: .leading, spacing: 12) {
-            sectionHeader(
-                title: "Parent Controls",
-                subtitle: "Visible gates for V1 review. These controls are planned and disabled."
-            )
-
-            plannedControlRow(
-                icon: "mic.fill",
-                title: "Mic lock planned",
-                detail: "Not active in V1. Today, the Home mic asks iOS permission and uses on-device speech only.",
-                tint: KannadaTheme.peacock
-            )
-
-            plannedControlRow(
-                icon: "icloud.fill",
-                title: "Cloud sync",
-                detail: "Planned: opt-in backup only after parent consent. Off in V1.",
-                tint: KannadaTheme.parentBlue
-            )
-        }
-    }
-
-    private func plannedControlRow(icon: String, title: String, detail: String, tint: Color) -> some View {
-        HStack(alignment: .center, spacing: 12) {
-            Image(systemName: icon)
+            Text("Later")
                 .font(.headline.weight(.black))
-                .foregroundStyle(tint)
-                .frame(width: 38, height: 38)
-                .background(tint.opacity(0.12), in: Circle())
+                .foregroundStyle(KannadaTheme.ink)
 
-            VStack(alignment: .leading, spacing: 4) {
-                Text(title)
-                    .font(.callout.weight(.black))
-                    .foregroundStyle(KannadaTheme.ink)
-
-                Text(detail)
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(KannadaTheme.ink.opacity(0.62))
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-
-            Spacer(minLength: 8)
-
-            Toggle("", isOn: .constant(false))
-                .labelsHidden()
-                .disabled(true)
-                .tint(tint)
-                .accessibilityLabel("\(title) planned")
+            Text("Mic lock and iCloud backup are not in this version. Voice stays on-device, and favorites do not leave the phone.")
+                .font(.callout.weight(.semibold))
+                .foregroundStyle(KannadaTheme.ink.opacity(0.62))
+                .fixedSize(horizontal: false, vertical: true)
         }
-        .padding(14)
-        .kannadaCard(cornerRadius: 18)
-    }
-
-    private var dataNotes: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            sectionHeader(
-                title: "Data Notes",
-                subtitle: "What parents own and what V1 does not collect."
-            )
-
-            noteRow(
-                icon: "person.crop.circle.badge.checkmark",
-                title: "Parent-owned progress",
-                detail: "\(savedCount) saved words and \(practicedCount) practice taps are stored on this device for the parent to review.",
-                tint: KannadaTheme.marigold
-            )
-
-            noteRow(
-                icon: "text.bubble.fill",
-                title: "Typed and spoken prompts",
-                detail: "Prompts are used to find a Kannada word during the session. They are not added to the saved list unless a parent saves the result.",
-                tint: KannadaTheme.peacock
-            )
-
-            noteRow(
-                icon: "trash.fill",
-                title: "Local delete",
-                detail: "Removing a favorite deletes that saved word from this device's local list.",
-                tint: KannadaTheme.blush
-            )
-        }
-    }
-
-    private func noteRow(icon: String, title: String, detail: String, tint: Color) -> some View {
-        HStack(alignment: .top, spacing: 12) {
-            Image(systemName: icon)
-                .font(.headline.weight(.black))
-                .foregroundStyle(tint)
-                .frame(width: 36, height: 36)
-                .background(tint.opacity(0.12), in: Circle())
-
-            VStack(alignment: .leading, spacing: 4) {
-                Text(title)
-                    .font(.callout.weight(.black))
-                    .foregroundStyle(KannadaTheme.ink)
-
-                Text(detail)
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(KannadaTheme.ink.opacity(0.62))
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-        }
-        .padding(14)
+        .padding(16)
         .kannadaCard(cornerRadius: 18)
     }
 
     @ViewBuilder
     private var localFavorites: some View {
         VStack(alignment: .leading, spacing: 12) {
-            sectionHeader(
-                title: "Local Favorites",
-                subtitle: "Saved words remain on this device."
-            )
+            Text("Local favorites")
+                .font(.headline.weight(.black))
+                .foregroundStyle(KannadaTheme.ink)
 
             if favoritesStore.savedWords.isEmpty {
                 emptyFavorites
@@ -242,11 +199,11 @@ struct FavoritesView: View {
                 .font(.title2.weight(.black))
                 .foregroundStyle(KannadaTheme.marigold)
 
-            Text("No local favorites yet")
+            Text("No saved words yet")
                 .font(.headline.weight(.black))
                 .foregroundStyle(KannadaTheme.ink)
 
-            Text("When a parent saves words from Home or Learn, they appear here. V1 keeps this list on the device.")
+            Text("Save a word from Home or Learn and it will show up here.")
                 .font(.callout.weight(.semibold))
                 .foregroundStyle(KannadaTheme.ink.opacity(0.62))
                 .fixedSize(horizontal: false, vertical: true)
@@ -315,31 +272,31 @@ struct FavoritesView: View {
                     .minimumScaleFactor(0.75)
             }
 
-            Button(role: .destructive) {
-                favoritesStore.remove(saved)
-            } label: {
-                Label("Remove", systemImage: "star.slash")
-                    .font(.caption.weight(.black))
-                    .frame(maxWidth: .infinity, minHeight: 38)
+            HStack(spacing: 8) {
+                Button {
+                    speechOutput.speak(saved.kannada, wordID: saved.wordID)
+                } label: {
+                    Image(systemName: "speaker.wave.2.fill")
+                        .font(.caption.weight(.black))
+                        .frame(width: 44, height: 44)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(KannadaTheme.peacock)
+                .accessibilityLabel("Hear \(saved.english)")
+
+                Button(role: .destructive) {
+                    favoritesStore.remove(saved)
+                } label: {
+                    Label("Remove", systemImage: "star.slash")
+                        .font(.caption.weight(.black))
+                        .frame(maxWidth: .infinity, minHeight: 44)
+                }
+                .buttonStyle(.bordered)
+                .tint(KannadaTheme.marigold)
+                .accessibilityLabel("Remove \(saved.english)")
             }
-            .buttonStyle(.bordered)
-            .tint(KannadaTheme.marigold)
-            .accessibilityLabel("Remove \(saved.english)")
         }
         .padding(14)
         .kannadaCard(cornerRadius: 20)
-    }
-
-    private func sectionHeader(title: String, subtitle: String) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(title)
-                .font(.headline.weight(.black))
-                .foregroundStyle(KannadaTheme.ink)
-
-            Text(subtitle)
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(KannadaTheme.ink.opacity(0.58))
-                .fixedSize(horizontal: false, vertical: true)
-        }
     }
 }
