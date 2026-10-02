@@ -29,6 +29,25 @@ xcodebuild test -project WhatsThisInKannada.xcodeproj -scheme WhatsThisInKannada
 
 The project has been tested with Xcode 26.5+ on an iPhone 17 simulator. Simulator voice input uses the typed-word fallback; live microphone recognition still needs physical iPhone testing.
 
+## End-to-end tests
+
+UI flows are covered with [`e2e`](https://e2e.tester.army/docs/quickstart) and `@e2e-dev/mobile` on an iOS simulator. Tests use locator assertions (`screen.getByRole`, `getByText`, `getByTestId`, and `getByPlaceholder`). They do not call a model.
+
+This environment cannot boot an iOS simulator. Run the suite on a Mac with Xcode and an iOS simulator runtime:
+
+```bash
+npm ci
+xcodebuild -project WhatsThisInKannada.xcodeproj -scheme WhatsThisInKannada \
+  -configuration Debug -sdk iphonesimulator \
+  -destination 'generic/platform=iOS Simulator' \
+  -derivedDataPath .build/DerivedData build
+npx e2e run
+```
+
+`npx e2e run` boots a simulator when none is running, installs `.build/DerivedData/Build/Products/Debug-iphonesimulator/WhatsThisInKannada.app`, and launches `app.whatsthiskannada`. Set `E2E_APP_PATH` to install a different simulator `.app`, or `E2E_DEVICE` to a simulator name or UDID. `npx agent-device doctor` checks the toolchain. `npx e2e list` prints the selected tests without starting a simulator.
+
+GitHub Actions runs the same commands on `macos-26` in [`.github/workflows/e2e-ios.yml`](.github/workflows/e2e-ios.yml).
+
 ## Current Implementation
 
 - Home speech/text lookup flow, including Kannada script and "Try another".

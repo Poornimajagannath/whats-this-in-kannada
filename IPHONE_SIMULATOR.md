@@ -48,3 +48,4 @@ xcrun simctl launch "iPhone 17" app.whatsthiskannada
 - On Simulator, live microphone input can be unreliable. The app shows "Type a word, then tap mic"; type a word first, then tap the red mic to resolve it.
 - The macOS preview intentionally falls back to typed input for voice lookup.
 - The curated catalog, flashcards, favorites, and speaker button can be tested in the preview.
+- End-to-end tests for those flows run with `npx e2e run` after the simulator build above. See the README section "End-to-end tests". The suite needs a Mac with Xcode; it does not run where no iOS simulator is installed.

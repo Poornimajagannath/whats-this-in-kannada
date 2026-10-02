@@ -63,6 +63,7 @@ struct LibraryView: View {
                                         WordTileView(word: word, compact: true)
                                     }
                                     .buttonStyle(.plain)
+                                    .accessibilityIdentifier("word-\(word.id)")
                                 }
                             }
                         case .browse:

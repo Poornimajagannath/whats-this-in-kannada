@@ -57,10 +57,16 @@ struct WordCatalog {
         let normalizedQuery = PhraseParser.normalize(query)
         guard !normalizedQuery.isEmpty else { return candidates }
 
+        let queryTokens = Set(PhraseParser.tokens(from: normalizedQuery))
+
         return candidates.filter { word in
             word.searchableTerms
                 .map(PhraseParser.normalize)
-                .contains { $0.contains(normalizedQuery) || normalizedQuery.contains($0) }
+                .contains { term in
+                    // "ele" matches elephant. "baby elephant" matches both words.
+                    // A whole token only, so "elephant" does not also return "ant".
+                    term.contains(normalizedQuery) || queryTokens.contains(term)
+                }
         }
     }
 

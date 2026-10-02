@@ -83,6 +83,7 @@ struct PracticeView: View {
                     .padding(.horizontal, 12)
                     .frame(height: 36)
                     .background(.white.opacity(0.16), in: Capsule())
+                    .accessibilityIdentifier("practice-count")
                     .accessibilityLabel("\(completedIDs.count) of \(practiceWords.count) words practiced")
             }
 
@@ -160,6 +161,7 @@ private struct FlashcardPracticeView: View {
             .kannadaCard(cornerRadius: 28)
             .padding(.horizontal, 16)
             .accessibilityElement(children: .combine)
+            .accessibilityIdentifier("flashcard")
             .accessibilityLabel(showingAnswer ? "\(word.displayEnglish), \(word.kannada), \(word.transliteration)" : word.displayEnglish)
 
             HStack(spacing: 12) {
@@ -251,6 +253,7 @@ private struct QuizPracticeView: View {
                 .kannadaCard(cornerRadius: 26)
                 .padding(.horizontal, 16)
                 .accessibilityElement(children: .combine)
+                .accessibilityIdentifier("quiz-prompt")
                 .accessibilityLabel("Quiz picture for a \(prompt.category.displayName) word")
 
                 VStack(spacing: 10) {

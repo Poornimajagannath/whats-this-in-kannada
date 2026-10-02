@@ -66,6 +66,7 @@ struct FavoritesView: View {
                 .onLongPressGesture(minimumDuration: 2) {
                     isUnlocked = true
                 }
+                .accessibilityIdentifier("parent-unlock")
                 .accessibilityLabel("Hold for two seconds to open parent space")
                 .accessibilityAddTraits(.isButton)
 

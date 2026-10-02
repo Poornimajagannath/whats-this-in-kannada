@@ -1,0 +1,15 @@
+{
+  "name": "whats-this-in-kannada",
+  "private": true,
+  "description": "End-to-end tests for What's This in Kannada.",
+  "scripts": {
+    "test:e2e": "e2e run"
+  },
+  "engines": {
+    "node": ">=22.12"
+  },
+  "devDependencies": {
+    "@e2e-dev/mobile": "^0.9.1",
+    "e2e": "^0.16.0"
+  }
+}
