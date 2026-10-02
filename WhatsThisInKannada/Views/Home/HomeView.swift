@@ -162,6 +162,7 @@ struct HomeView: View {
 
             HStack(spacing: 10) {
                 TextField("Type a word", text: $typedText)
+                    .accessibilityLabel("Type a word")
                     .toddlerTextInputBehavior()
                     .onSubmit {
                         Task { await resolve(typedText) }

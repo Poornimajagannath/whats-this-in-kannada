@@ -1,0 +1,59 @@
+name: e2e ios
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  ios:
+    runs-on: macos-26
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+
+      - name: Build for the simulator
+        run: |
+          xcodebuild -project WhatsThisInKannada.xcodeproj -scheme WhatsThisInKannada \
+            -configuration Debug -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath .build/DerivedData build
+
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.agent-device
+          key: agent-device-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
+      - name: Boot an iPhone 17 simulator
+        run: |
+          set -euo pipefail
+          RUNTIME=com.apple.CoreSimulator.SimRuntime.iOS-26-5
+          if ! xcrun simctl list runtimes | grep -q "$RUNTIME"; then
+            echo "Expected runtime $RUNTIME. Installed runtimes:"
+            xcrun simctl list runtimes
+            exit 1
+          fi
+          UDID=$(xcrun simctl create e2e "iPhone 17" "$RUNTIME")
+          xcrun simctl bootstatus "$UDID" -b
+
+      - name: Run e2e
+        run: npx e2e run --target ios --reporter list,junit
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: ${{ !cancelled() }}
+        with:
+          name: e2e-ios
+          path: .e2e
+          if-no-files-found: warn

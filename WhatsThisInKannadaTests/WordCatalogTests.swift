@@ -18,6 +18,15 @@ final class WordCatalogTests: XCTestCase {
         XCTAssertEqual(catalog.search("apple", category: .fruits).first?.id, "sebu")
     }
 
+    func testSearchMatchesWholeTokensInsideAPhraseButNotShorterWords() throws {
+        let catalog = WordCatalog(words: try Self.loadProductionSeedWords())
+
+        XCTAssertEqual(catalog.search("elephant").map(\.id), ["aane"])
+        XCTAssertEqual(catalog.search("baby elephant").map(\.id), ["magu", "aane"])
+        XCTAssertEqual(catalog.search("ajji").map(\.id), ["ajji"])
+        XCTAssertEqual(catalog.search("spaceship").map(\.id), [])
+    }
+
     func testKannadaWordDecodesLegacySeedShape() throws {
         let data = """
         [
